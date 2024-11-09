@@ -6,28 +6,28 @@
 
 // Data
 const account1 = {
-  owner: 'Jonas Schmedtmann',
+  owner: 'Eslam Omar',
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
 };
 
 const account2 = {
-  owner: 'Jessica Davis',
+  owner: 'Ahmed Rashad',
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
 };
 
 const account3 = {
-  owner: 'Steven Thomas Williams',
+  owner: 'Ahmed Samir',
   movements: [200, -200, 340, -300, -20, 50, 400, -460],
   interestRate: 0.7,
   pin: 3333,
 };
 
 const account4 = {
-  owner: 'Sarah Smith',
+  owner: 'Abdelrahman Fawal',
   movements: [430, 1000, 700, 50, 90],
   interestRate: 1,
   pin: 4444,
@@ -63,24 +63,35 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 //TODO display movements on application
 
-const displayMovements = movements => {
+const displayMovements = movement => {
   containerMovements.innerHTML = '';
-
-  movements.forEach(function (mov, idx) {
+  movement.forEach((mov, idx) => {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
-    let html = `
+    const html = `
         <div class="movements__row">
           <div class="movements__type movements__type--${type}">${
       idx + 1
     } ${type.toUpperCase()}</div>
           <div class="movements__date">3 days ago</div>
-          <div class="movements__value">${mov}€</div>
+          <div class="movements__value">${mov}0€</div>
         </div>`;
-    containerMovements.insertAdjacentHTML('afterbegin', html);
+    containerMovements.insertAdjacentHTML('beforeend', html);
   });
 };
 
-displayMovements(account1['movements']);
+displayMovements(account1.movements);
+
+const createUserNames = accs => {
+  accs.forEach(acc => {
+    acc.userName = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(ele => ele[0])
+      .join('');
+  });
+};
+
+createUserNames(accounts);
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -130,6 +141,7 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // // the at() method will get you the index of element (it is like python with indexing)
 // console.log(arr.at(0));
 // console.log(arr.at(-1));
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // //the for of loop
 // for (let [idx, movement] of movements.entries()) {
@@ -147,3 +159,49 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 //   );
 //   console.log(arr);
 // });
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //Challange 2#
+
+// const julia1 = [3, 5, 2, 12, 7],
+//   kate1 = [4, 1, 15, 8, 3],
+//   julia2 = [9, 16, 6, 8, 3],
+//   kate2 = [10, 5, 6, 1, 4];
+
+// const checkDogs = (dogsJulia, dogsKate) => {
+//   const dogsJuliaCopy = [...dogsJulia];
+//   const dogsJuliaTrueValues = dogsJuliaCopy.splice(1, 2);
+//   const allData = dogsJuliaTrueValues.concat(dogsKate);
+
+//   console.log(allData);
+
+//   allData.forEach(function (dog, i) {
+//     if (dog >= 3) {
+//       console.log(`Dog number ${i + 1} is an adult, and is ${dog} years old`);
+//     } else {
+//       console.log(`Dog number ${i + 1} is still a puppy 🐶`);
+//     }
+//   });
+// };
+
+// checkDogs(julia1, kate1);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //example of map() method
+// const USDtoEGP = 49.3;
+
+// const convertToEGP = movements.map(mov => Math.round(mov * USDtoEGP));
+// console.log(movements);
+// console.log(convertToEGP);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// // example of filter() method
+// const deposit = movements.filter(function (mov) {
+//   return mov > 0;
+// });
+// console.log(movements);
+// console.log(deposit);
+
+// const withdrawals = movements.filter(mov => mov < 0);
+// console.log(withdrawals);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
