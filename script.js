@@ -89,7 +89,6 @@ const displayMovements = movement => {
     containerMovements.insertAdjacentHTML('beforeend', html);
   });
 };
-displayMovements(account1.movements);
 
 //TODO print current balance
 const calcCurrentBalance = function (movements) {
@@ -98,30 +97,56 @@ const calcCurrentBalance = function (movements) {
   }, 0);
   labelBalance.textContent = `${global}€`;
 };
-calcCurrentBalance(account1['movements']);
 
 //TODO calculate income, outcome, interest
-const calculateAccountStatus = function (movements) {
-  const income = movements
+const calculateAccountStatus = function (account) {
+  const income = account.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumIn.textContent = `${income}€`;
 
-  const outcome = movements
+  const outcome = account.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumOut.textContent = `${Math.abs(outcome)}€`;
 
-  const interest = movements
+  const interest = account.movements
     .filter(mov => mov > 0)
-    .map(mov => mov * 0.012)
+    .map(mov => mov * (account.interestRate / 100))
     .filter(mov => mov >= 1)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumInterest.textContent = `${interest}€`;
 };
-calculateAccountStatus(account1.movements);
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
+
+//handle event listener
+let currentAccount;
+document.querySelector('body').addEventListener('click', function (event) {
+  event.preventDefault();
+  currentAccount = accounts.find(
+    acc => acc.userName === inputLoginUsername.value
+  );
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    //Display UI and message
+    containerApp.style.opacity = '1';
+    labelWelcome.textContent = `Wellcome Back, ${currentAccount.owner}`;
+
+    // Display movements
+    displayMovements(currentAccount.movements);
+
+    //Display account balance
+    calcCurrentBalance(currentAccount['movements']);
+
+    //Display account status
+    calculateAccountStatus(currentAccount);
+
+    //get rid of input data
+    inputLoginUsername.value = '';
+    inputLoginPin.value = '';
+    inputLoginPin.blur();
+  }
+});
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // LECTURES
 
 const currencies = new Map([
