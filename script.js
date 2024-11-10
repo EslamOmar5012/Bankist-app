@@ -61,8 +61,19 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-//TODO display movements on application
+//TODO compute userNames
+const createUserNames = accs => {
+  accs.forEach(acc => {
+    acc.userName = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(ele => ele[0])
+      .join('');
+  });
+};
+createUserNames(accounts);
 
+//TODO display movements on application
 const displayMovements = movement => {
   containerMovements.innerHTML = '';
   movement.forEach((mov, idx) => {
@@ -73,26 +84,42 @@ const displayMovements = movement => {
       idx + 1
     } ${type.toUpperCase()}</div>
           <div class="movements__date">3 days ago</div>
-          <div class="movements__value">${mov}0€</div>
+          <div class="movements__value">${mov}€</div>
         </div>`;
     containerMovements.insertAdjacentHTML('beforeend', html);
   });
 };
-
 displayMovements(account1.movements);
 
-const createUserNames = accs => {
-  accs.forEach(acc => {
-    acc.userName = acc.owner
-      .toLowerCase()
-      .split(' ')
-      .map(ele => ele[0])
-      .join('');
-  });
+//TODO print current balance
+const calcCurrentBalance = function (movements) {
+  const global = movements.reduce((acc, mov) => {
+    return acc + mov;
+  }, 0);
+  labelBalance.textContent = `${global}€`;
 };
+calcCurrentBalance(account1['movements']);
 
-createUserNames(accounts);
+//TODO calculate income, outcome, interest
+const calculateAccountStatus = function (movements) {
+  const income = movements
+    .filter(mov => mov > 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${income}€`;
 
+  const outcome = movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(outcome)}€`;
+
+  const interest = movements
+    .filter(mov => mov > 0)
+    .map(mov => mov * 0.012)
+    .filter(mov => mov >= 1)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumInterest.textContent = `${interest}€`;
+};
+calculateAccountStatus(account1.movements);
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -161,7 +188,7 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // });
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// //Challange 2#
+// //Challange 1#
 
 // const julia1 = [3, 5, 2, 12, 7],
 //   kate1 = [4, 1, 15, 8, 3],
@@ -204,4 +231,75 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 // const withdrawals = movements.filter(mov => mov < 0);
 // console.log(withdrawals);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //example of reduce() method
+
+// const global = movements.reduce(function (acc, mov, i, arr) {
+//   console.log(`iteration ${i + 1} : ${acc}`);
+//   return acc + mov;
+// }, 0);
+
+// console.log(global);
+
+// //second example of reduce() method
+// const maxValue = movements.reduce(function (acc, mov) {
+//   if (mov > acc) acc = mov;
+//   console.log(acc);
+//   return acc;
+// }, movements.at(0));
+
+// console.log(maxValue);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //Challange 2#
+// const dogs_data1 = [5, 2, 4, 1, 15, 8, 3],
+//   dogs_data2 = [16, 6, 10, 5, 6, 1, 4];
+
+// const calcAverageHumanAge = ages => {
+//   let human_ages = ages.map(age => {
+//     if (age <= 2) return (age *= 2);
+//     else return (age = 16 + age * 4);
+//   });
+
+//   human_ages = human_ages.filter(age => age >= 18);
+
+//   const total_ages = human_ages.reduce((acc, age) => acc + age, 0);
+//   return total_ages / human_ages.length;
+// };
+
+// console.log(calcAverageHumanAge(dogs_data1));
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //example of chaining
+// const totalDepositeUSD = movements
+//   .filter((mov, i, arr) => {
+//     return mov > 0;
+//   })
+//   .map((mov, i, arr) => {
+//     return mov * 1.07;
+//   })
+//   .reduce((acc, mov, i, arr) => {
+//     return acc + mov;
+//   }, 0);
+// console.log(totalDepositeUSD);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //Challange 3#
+// const dogs_data1 = [5, 2, 4, 1, 15, 8, 3],
+//   dogs_data2 = [16, 6, 10, 5, 6, 1, 4];
+
+// const calcAverageHumanAge = ages => {
+//   const avg_adult_dogs = ages
+//     .map(age => {
+//       if (age <= 2) return 2 * age;
+//       else return 16 + age * 4;
+//     })
+//     .filter(age => age >= 18)
+//     .reduce((acc, age, _, arr) => acc + age / arr.length, 0);
+
+//   console.log(avg_adult_dogs);
+// };
+
+// calcAverageHumanAge(dogs_data1);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
