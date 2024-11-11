@@ -118,9 +118,42 @@ const calculateAccountStatus = function (account) {
   labelSumInterest.textContent = `${interest}€`;
 };
 
-//handle event listener
+//TODO update UI
+const updateUI = currentAccount => {
+  // Display movements
+  displayMovements(currentAccount.movements);
+
+  //Display account balance
+  calcCurrentBalance(currentAccount['movements']);
+
+  //Display account status
+  calculateAccountStatus(currentAccount);
+};
+
+//TODO transfare money
+const transfareMoney = function (name, amount, curAcc) {
+  const sentAccount = accounts.find(acc => acc.userName === name) || account1;
+  const accountBalance = Number(labelBalance.textContent.split('€')[0]);
+  const newBalance = accountBalance - amount;
+  if (newBalance >= 0) {
+    currentAccount.movements.push(amount * -1);
+    sentAccount.movements.push(amount);
+    // Display movements
+    displayMovements(currentAccount.movements);
+
+    //Display account balance
+    calcCurrentBalance(currentAccount['movements']);
+
+    //Display account status
+    calculateAccountStatus(currentAccount);
+  } else {
+    console.log('We cant transfare money');
+  }
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//TODO implementing login
 let currentAccount;
-document.querySelector('body').addEventListener('click', function (event) {
+btnLogin.addEventListener('click', function (event) {
   event.preventDefault();
   currentAccount = accounts.find(
     acc => acc.userName === inputLoginUsername.value
@@ -130,20 +163,29 @@ document.querySelector('body').addEventListener('click', function (event) {
     containerApp.style.opacity = '1';
     labelWelcome.textContent = `Wellcome Back, ${currentAccount.owner}`;
 
-    // Display movements
-    displayMovements(currentAccount.movements);
-
-    //Display account balance
-    calcCurrentBalance(currentAccount['movements']);
-
-    //Display account status
-    calculateAccountStatus(currentAccount);
+    //update UI
+    updateUI(currentAccount);
 
     //get rid of input data
     inputLoginUsername.value = '';
     inputLoginPin.value = '';
     inputLoginPin.blur();
   }
+});
+
+//TODO implementing transfare
+btnTransfer.addEventListener('click', function (event) {
+  event.preventDefault();
+  transfareMoney(
+    inputTransferTo.value,
+    Math.abs(Number(inputTransferAmount.value), currentAccount)
+  );
+  //update UI
+  updateUI(currentAccount);
+
+  //get rid of input data
+  inputTransferAmount.value = inputTransferTo.value = '';
+  inputTransferAmount.blur();
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
