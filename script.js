@@ -129,30 +129,10 @@ const updateUI = currentAccount => {
   //Display account status
   calculateAccountStatus(currentAccount);
 };
-
-//TODO transfare money
-const transfareMoney = function (name, amount, curAcc) {
-  const sentAccount = accounts.find(acc => acc.userName === name) || account1;
-  const accountBalance = Number(labelBalance.textContent.split('€')[0]);
-  const newBalance = accountBalance - amount;
-  if (newBalance >= 0) {
-    currentAccount.movements.push(amount * -1);
-    sentAccount.movements.push(amount);
-    // Display movements
-    displayMovements(currentAccount.movements);
-
-    //Display account balance
-    calcCurrentBalance(currentAccount['movements']);
-
-    //Display account status
-    calculateAccountStatus(currentAccount);
-  } else {
-    console.log('We cant transfare money');
-  }
-};
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//TODO implementing login
 let currentAccount;
+
+//TODO implementing login
 btnLogin.addEventListener('click', function (event) {
   event.preventDefault();
   currentAccount = accounts.find(
@@ -166,9 +146,8 @@ btnLogin.addEventListener('click', function (event) {
     //update UI
     updateUI(currentAccount);
 
-    //get rid of input data
-    inputLoginUsername.value = '';
-    inputLoginPin.value = '';
+    //clear inputs
+    inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
   }
 });
@@ -176,14 +155,25 @@ btnLogin.addEventListener('click', function (event) {
 //TODO implementing transfare
 btnTransfer.addEventListener('click', function (event) {
   event.preventDefault();
-  transfareMoney(
-    inputTransferTo.value,
-    Math.abs(Number(inputTransferAmount.value), currentAccount)
-  );
+
+  const sendTo = inputTransferTo.value;
+  const amount = inputTransferAmount.value;
+  const accountBalance = Number(labelBalance.textContent.split('€')[0]);
+  const newBalance = accountBalance - amount;
+
+  const sentAccount =
+    accounts.find(acc => acc.userName === sendTo) || currentAccount;
+
+  if (newBalance >= 0 && sentAccount.owner !== currentAccount.owner) {
+    currentAccount.movements.push(-amount);
+    sentAccount.movements.push(amount);
+  } else {
+    console.log('We cant transfare money');
+  }
   //update UI
   updateUI(currentAccount);
 
-  //get rid of input data
+  //clear inputs
   inputTransferAmount.value = inputTransferTo.value = '';
   inputTransferAmount.blur();
 });
