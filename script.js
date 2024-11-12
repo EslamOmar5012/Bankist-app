@@ -115,7 +115,7 @@ const calculateAccountStatus = function (account) {
     .map(mov => mov * (account.interestRate / 100))
     .filter(mov => mov >= 1)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = `${Math.round(interest)}€`;
 };
 
 //TODO update UI
@@ -129,6 +129,16 @@ const updateUI = currentAccount => {
   //Display account status
   calculateAccountStatus(currentAccount);
 };
+
+//TODO remove values from inputs
+const remove = function ({ input1 = undefined, input2 = undefined }) {
+  if (input1 !== undefined) input1.value = '';
+  if (input2 !== undefined) {
+    input2.value = '';
+    input2.blur();
+  }
+};
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let currentAccount;
 
@@ -147,9 +157,8 @@ btnLogin.addEventListener('click', function (event) {
     updateUI(currentAccount);
 
     //clear inputs
-    inputLoginUsername.value = inputLoginPin.value = '';
-    inputLoginPin.blur();
-  }
+    remove({ input1: inputLoginUsername, input2: inputLoginPin });
+  } else console.log("You can't login");
 });
 
 //TODO implementing transfare
@@ -157,7 +166,7 @@ btnTransfer.addEventListener('click', function (event) {
   event.preventDefault();
 
   const sendTo = inputTransferTo.value;
-  const amount = inputTransferAmount.value;
+  const amount = Number(inputTransferAmount.value);
   const accountBalance = Number(labelBalance.textContent.split('€')[0]);
   const newBalance = accountBalance - amount;
 
@@ -167,6 +176,7 @@ btnTransfer.addEventListener('click', function (event) {
   if (newBalance >= 0 && sentAccount.owner !== currentAccount.owner) {
     currentAccount.movements.push(-amount);
     sentAccount.movements.push(amount);
+    console.log(sentAccount.movements);
   } else {
     console.log('We cant transfare money');
   }
@@ -174,8 +184,50 @@ btnTransfer.addEventListener('click', function (event) {
   updateUI(currentAccount);
 
   //clear inputs
-  inputTransferAmount.value = inputTransferTo.value = '';
-  inputTransferAmount.blur();
+  remove({ input1: inputTransferAmount, input2: inputTransferTo });
+});
+
+//TODO implement delete account
+btnClose.addEventListener('click', function (event) {
+  event.preventDefault();
+
+  const deletedAccUserName = inputCloseUsername.value;
+  const deletedAccPin = Number(inputClosePin.value);
+
+  if (
+    currentAccount.userName === deletedAccUserName &&
+    currentAccount.pin === deletedAccPin
+  ) {
+    const accIndex = accounts.findIndex(function (acc) {
+      return acc.userName === deletedAccUserName;
+    });
+
+    accounts.splice(accIndex, 1);
+
+    //hide UI
+    remove({ input1: inputCloseUsername, input2: inputClosePin });
+    containerApp.style.opacity = 0;
+
+    labelWelcome.textContent = 'Wellcome to Aramit Bank';
+  } else {
+    console.log('We cannot delete this Account');
+  }
+});
+
+//TODO implement loan
+btnLoan.addEventListener('click', function (event) {
+  event.preventDefault();
+  const loan = Number(inputLoanAmount.value);
+  const condition = currentAccount.movements.some(function (mov) {
+    return mov >= loan * 0.1;
+  });
+  if (condition) {
+    currentAccount.movements.push(Math.abs(loan));
+    updateUI(currentAccount);
+    remove({ input1: inputLoanAmount });
+  } else {
+    console.log("You can' request loan");
+  }
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -366,4 +418,25 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 // const firstWithdraw = movements.find(mov => mov < 0);
 // console.log(firstWithdraw);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //example on findIndex() method
+// // The findIndex() method of Array instances returns the index of the first element in an array that satisfies the provided testing function. If no elements satisfy the testing function, -1 is returned.
+
+// const found = movements.findIndex(mov => mov < 0);
+// console.log(found);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //example on some() method
+// //The some() method of Array instances tests whether at least one element in the array passes the test implemented by the provided function. It returns true if, in the array, it finds an element for which the provided function returns true; otherwise it returns false. It doesn't modify the array.
+
+// const s = movements.some(mov => mov > 0); //it will return true
+// console.log(s);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //example on every method
+// //The every() method of Array instances tests whether all elements in the array pass the test implemented by the provided function. It returns a Boolean value.
+
+// const e = movements.every(mov => mov < 0); //it will return false
+// console.log(e);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
