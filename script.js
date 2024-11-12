@@ -74,9 +74,16 @@ const createUserNames = accs => {
 createUserNames(accounts);
 
 //TODO display movements on application
-const displayMovements = movement => {
+const displayMovements = (movement, sort = false) => {
   containerMovements.innerHTML = '';
-  movement.forEach((mov, idx) => {
+  let movs;
+  if (!sort) {
+    movs = movement.slice('').sort((a, b) => a - b);
+  } else {
+    movs = movement.slice();
+  }
+  console.log(movement);
+  movs.forEach((mov, idx) => {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
         <div class="movements__row">
@@ -121,7 +128,7 @@ const calculateAccountStatus = function (account) {
 //TODO update UI
 const updateUI = currentAccount => {
   // Display movements
-  displayMovements(currentAccount.movements);
+  displayMovements(currentAccount.movements, true);
 
   //Display account balance
   calcCurrentBalance(currentAccount['movements']);
@@ -138,7 +145,6 @@ const remove = function ({ input1 = undefined, input2 = undefined }) {
     input2.blur();
   }
 };
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let currentAccount;
 
@@ -228,6 +234,14 @@ btnLoan.addEventListener('click', function (event) {
   } else {
     console.log("You can' request loan");
   }
+});
+
+//TODO implement sorting
+let sorted = false;
+btnSort.addEventListener('click', event => {
+  event.preventDefault();
+  displayMovements(currentAccount.movements, sorted);
+  sorted = !sorted;
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -440,3 +454,52 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // const e = movements.every(mov => mov < 0); //it will return false
 // console.log(e);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //example of flat() function
+// // The flat() method of Array instances creates a new array with all sub-array elements concatenated into it recursively up to the specified depth.
+
+// const arr = [
+//   [1, 2, [3, 'x', 'n']],
+//   [4, 5, 6, ['f', 'r', 'm']],
+//   [7, 8, 9],
+// ];
+
+// const arrFlat = arr.flat();
+
+// //example of flatMap() method
+// //The flatMap() method of Array instances returns a new array formed by applying a given callback function to each element of the array, and then flattening the result by one level. It is identical to a map() followed by a flat() of depth 1 (arr.map(...args).flat()), but slightly more efficient than calling those two methods separately.
+
+// const allBalance = accounts
+//   .flatMap(acc => acc.movements)
+//   .reduce((acc, mov) => acc + mov, 0);
+
+// console.log(allBalance);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //example of sort() method
+// //The sort() method of Array instances sorts the elements of an array in place and returns the reference to the same array, now sorted. The default sort order is ascending, built upon converting the elements into strings, then comparing their sequences of UTF-16 code units values.
+
+// //assending
+// movements.sort((a, b) => a - b);
+// console.log(movements);
+
+// //dessending
+// movements.sort((a, b) => b - a);
+// console.log(movements);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// //example of from() method to fill the array
+// const rendomDice = Array.from({ length: 100 }, (_, i) =>
+//   Math.ceil(Math.random() * 6)
+// );
+// console.log(rendomDice);
+
+//example of from() method
+
+// document.querySelector('.balance__value').addEventListener('click', () => {
+//   const elementsUI = Array.from(document.querySelectorAll('.movements__value'));
+//   console.log(elementsUI);
+//   const movs = elementsUI.map(ele => Number(ele.textContent.split('€')[0]));
+//   console.log(movs);
+// });
+
+//exercise
