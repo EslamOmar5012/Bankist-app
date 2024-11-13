@@ -502,4 +502,95 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 //   console.log(movs);
 // });
 
-//exercise
+// //exercise 1# calculate overall bank deposite
+// const bankDeposites = accounts
+//   .flatMap(acc => acc.movements)
+//   .filter(mov => mov > 0)
+//   .reduce((acc, mov) => acc + mov, 0);
+
+// console.log(bankDeposites);
+
+// //exercise 2# calculate number of deposites at least 1000$
+// const bankDeposites_1000$ = accounts
+//   .flatMap(acc => acc.movements)
+//   .filter(mov => mov >= 1000)
+//   .reduce((acc, mov) => acc + 1, 0);
+// console.log(bankDeposites_1000$);
+
+// //exercise 3# create a title case converter that if it have one word it will not capitalize it
+// const titleCaseConverter = function (str) {
+//   const titleCasStr = str
+//     .split(' ')
+//     .map(word =>
+//       word.length === 1 ? word : word[0].toUpperCase().concat(word.slice(1))
+//     )
+//     .join(' ');
+
+//   console.log(titleCasStr);
+// };
+
+// titleCaseConverter('my name is eslam omar i am a soft ware engineer');
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //Challange #4
+
+// const check = dog => {
+//   if (dog.curFood > dog.recFood * 0.9 && dog.curFood < dog.recFood * 1.1) {
+//     return `${dog.owners[0]}'s dog is eating recommended portion`;
+//   } else if (dog.curFood > dog.recFood * 1.1) {
+//     return `${dog.owners[0]}'s dog is eating too much`;
+//   } else {
+//     return `${dog.owners[0]}'s dog is eating too little`;
+//   }
+// };
+
+// const dogs = [
+//   { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+//   { weight: 8, curFood: 200, owners: ['Matilda'] },
+//   { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+//   { weight: 32, curFood: 340, owners: ['Michael'] },
+// ];
+
+// //first require
+// dogs.forEach(dog => (dog.recFood = Math.trunc(dog.weight ** 0.75 * 28)));
+// console.log(dogs);
+
+// //second require
+// const sarahDog = dogs.find(dog => dog.owners.includes('Sarah'));
+// console.log(check(sarahDog));
+
+// //third require
+// const ownersEatTooMuch = dogs
+//   .filter(dog => dog.curFood > dog.recFood)
+//   .flatMap(dog => dog.owners);
+
+// const ownersEatTooLittle = dogs
+//   .filter(dog => dog.curFood < dog.recFood)
+//   .flatMap(dog => dog.owners);
+
+// console.log(ownersEatTooMuch);
+// console.log(ownersEatTooLittle);
+
+// //fourth require
+// console.log(`${ownersEatTooMuch.join(' and ')}'s dogs eat too much!`);
+// console.log(`${ownersEatTooLittle.join(' and ')}'s dogs eat too little!`);
+
+// //fifth require
+// console.log(dogs.some(dog => dog.curFood === dog.recFood));
+
+// //sixth require
+// console.log(
+//   dogs.some(
+//     dog => dog.curFood > dog.recFood * 0.9 && dog.curFood < dog.recFood * 1.1
+//   )
+// );
+
+// //require num 7
+// const ownersEatGood = dogs.filter(
+//   dog => dog.curFood > dog.recFood * 0.9 && dog.curFood < dog.recFood * 1.1
+// );
+// console.log(ownersEatGood);
+
+// //require num 8
+// const dogs2 = dogs.slice('').sort((a, b) => a.recFood - b.recFood);
+// console.log(dogs2);
