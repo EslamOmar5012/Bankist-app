@@ -209,8 +209,29 @@ const remove = function ({ input1 = undefined, input2 = undefined }) {
 let currentAccount;
 
 //TODO implementing login
+//implement log after interval
+let timer;
+const logOut = function () {
+  let time = 2 * 60 * 1000;
+  const x = setInterval(() => {
+    if (time === 0) {
+      labelWelcome.textContent = 'Wellcome to Aramit Bank';
+      containerApp.style.opacity = 0;
+      clearInterval(x);
+    }
+    labelTimer.textContent = `${new Date(time).getMinutes()}:${new Date(
+      time
+    ).getSeconds()}`;
+    time -= 1000;
+  }, 1000);
+  return x;
+};
 btnLogin.addEventListener('click', function (event) {
   event.preventDefault();
+
+  clearInterval(timer);
+  timer = logOut();
+
   currentAccount = accounts.find(
     acc => acc.userName === inputLoginUsername.value
   );
@@ -230,6 +251,9 @@ btnLogin.addEventListener('click', function (event) {
 //TODO implementing transfare
 btnTransfer.addEventListener('click', function (event) {
   event.preventDefault();
+
+  clearInterval(timer);
+  timer = logOut();
 
   const sendTo = inputTransferTo.value;
   const amount = Number(inputTransferAmount.value);
@@ -261,6 +285,9 @@ btnTransfer.addEventListener('click', function (event) {
 btnClose.addEventListener('click', function (event) {
   event.preventDefault();
 
+  clearInterval(timer);
+  timer = logOut();
+
   const deletedAccUserName = inputCloseUsername.value;
   const deletedAccPin = Number(inputClosePin.value);
 
@@ -287,6 +314,10 @@ btnClose.addEventListener('click', function (event) {
 //TODO implement loan
 btnLoan.addEventListener('click', function (event) {
   event.preventDefault();
+
+  clearInterval(timer);
+  timer = logOut();
+
   const loan = Number(inputLoanAmount.value);
   const condition = currentAccount.movements.some(function (mov) {
     return mov >= loan * 0.1;
@@ -307,6 +338,10 @@ btnLoan.addEventListener('click', function (event) {
 let sorted = false;
 btnSort.addEventListener('click', event => {
   event.preventDefault();
+
+  clearInterval(timer);
+  timer = logOut();
+
   displayMovements(currentAccount, sorted);
   sorted = !sorted;
 });
