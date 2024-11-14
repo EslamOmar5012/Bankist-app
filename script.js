@@ -85,24 +85,37 @@ const createUserNames = accs => {
 };
 createUserNames(accounts);
 
+//TODO calc current day
+const calcCurrDay = () => {
+  const now = new Date();
+  labelDate.textContent = `${String(now.getDate()).padStart(2, 0)}/${String(
+    now.getMonth() + 1
+  ).padStart(2, 0)}/${String(now.getFullYear()).padStart(2, 0)}, ${String(
+    now.getHours()
+  ).padStart(2, 0)}:${String(now.getMinutes()).padStart(2, 0)}`;
+};
+
 //TODO display movements on application
-const displayMovements = (movement, sort = false) => {
+const displayMovements = (acc, sort = false) => {
   containerMovements.innerHTML = '';
   let movs;
   if (!sort) {
-    movs = movement.slice('').sort((a, b) => a - b);
+    movs = acc.movements.slice('').sort((a, b) => a - b);
   } else {
-    movs = movement.slice();
+    movs = acc.movements.slice();
   }
-  console.log(movement);
   movs.forEach((mov, idx) => {
+    const index_real_movement = acc.movements.indexOf(mov);
+    const date = new Date(acc.movementsDates[index_real_movement]);
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
         <div class="movements__row">
           <div class="movements__type movements__type--${type}">${
       idx + 1
     } ${type.toUpperCase()}</div>
-          <div class="movements__date">3 days ago</div>
+          <div class="movements__date">${date.getDate()}/${
+      date.getMonth() + 1
+    }/${date.getFullYear()}</div>
           <div class="movements__value">${mov.toFixed(2)}€</div>
         </div>`;
     containerMovements.insertAdjacentHTML('beforeend', html);
@@ -140,13 +153,16 @@ const calculateAccountStatus = function (account) {
 //TODO update UI
 const updateUI = currentAccount => {
   // Display movements
-  displayMovements(currentAccount.movements, true);
+  displayMovements(currentAccount, true);
 
   //Display account balance
   calcCurrentBalance(currentAccount['movements']);
 
   //Display account status
   calculateAccountStatus(currentAccount);
+
+  //display currrent date
+  calcCurrDay();
 };
 
 //TODO remove values from inputs
@@ -194,7 +210,8 @@ btnTransfer.addEventListener('click', function (event) {
   if (newBalance >= 0 && sentAccount.owner !== currentAccount.owner) {
     currentAccount.movements.push(-amount);
     sentAccount.movements.push(amount);
-    console.log(sentAccount.movements);
+    currentAccount.movementsDates.push(new Date().toISOString());
+    sentAccount.movementsDates.push(new Date().toISOString());
   } else {
     console.log('We cant transfare money');
   }
@@ -241,6 +258,7 @@ btnLoan.addEventListener('click', function (event) {
   });
   if (condition) {
     currentAccount.movements.push(Math.abs(loan));
+    currentAccount.movementsDates.push(new Date().toISOString());
     updateUI(currentAccount);
     remove({ input1: inputLoanAmount });
   } else {
@@ -252,7 +270,7 @@ btnLoan.addEventListener('click', function (event) {
 let sorted = false;
 btnSort.addEventListener('click', event => {
   event.preventDefault();
-  displayMovements(currentAccount.movements, sorted);
+  displayMovements(currentAccount, sorted);
   sorted = !sorted;
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
