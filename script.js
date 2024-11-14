@@ -21,7 +21,7 @@ const account1 = {
     '2020-07-11T23:36:17.929Z',
     '2024-11-12T10:51:36.790Z',
   ],
-  currency: 'EUR',
+  currency: 'EGP',
   locale: 'ar-EG', // ar-EGP
 };
 
@@ -100,6 +100,15 @@ const calcCurrDay = acc => {
   labelDate.textContent = Intl.DateTimeFormat(acc.locale, options).format(now);
 };
 
+//TODO calc local curr
+const calcLocalCurr = (acc, curr) => {
+  const options = {
+    style: 'currency',
+    currency: acc.currency,
+  };
+  return Intl.NumberFormat(acc.locale, options).format(curr);
+};
+
 //TODO display movements on application
 const displayMovements = (acc, sort = false) => {
   containerMovements.innerHTML = '';
@@ -130,18 +139,21 @@ const displayMovements = (acc, sort = false) => {
       idx + 1
     } ${type.toUpperCase()}</div>
           <div class="movements__date">${txt}</div>
-          <div class="movements__value">${mov.toFixed(2)}€</div>
+          <div class="movements__value">${calcLocalCurr(
+            acc,
+            mov.toFixed(2)
+          )}</div>
         </div>`;
     containerMovements.insertAdjacentHTML('beforeend', html);
   });
 };
 
 //TODO print current balance
-const calcCurrentBalance = function (movements) {
-  const global = movements.reduce((acc, mov) => {
+const calcCurrentBalance = function (acc) {
+  const global = acc.movements.reduce((acc, mov) => {
     return acc + mov;
   }, 0);
-  labelBalance.textContent = `${global}€`;
+  labelBalance.textContent = `${calcLocalCurr(acc, global)}`;
 };
 
 //TODO calculate income, outcome, interest
@@ -149,19 +161,25 @@ const calculateAccountStatus = function (account) {
   const income = account.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${income.toFixed(2)}€`;
+  labelSumIn.textContent = `${calcLocalCurr(account, income.toFixed(2))}`;
 
   const outcome = account.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(+outcome.toFixed(2))}€`;
+  labelSumOut.textContent = `${calcLocalCurr(
+    account,
+    Math.abs(+outcome.toFixed(2))
+  )}`;
 
   const interest = account.movements
     .filter(mov => mov > 0)
     .map(mov => mov * (account.interestRate / 100))
     .filter(mov => mov >= 1)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  labelSumInterest.textContent = `${calcLocalCurr(
+    account,
+    interest.toFixed(2)
+  )}`;
 };
 
 //TODO update UI
@@ -170,7 +188,7 @@ const updateUI = currentAccount => {
   displayMovements(currentAccount, true);
 
   //Display account balance
-  calcCurrentBalance(currentAccount['movements']);
+  calcCurrentBalance(currentAccount);
 
   //Display account status
   calculateAccountStatus(currentAccount);
@@ -215,9 +233,12 @@ btnTransfer.addEventListener('click', function (event) {
 
   const sendTo = inputTransferTo.value;
   const amount = Number(inputTransferAmount.value);
-  const accountBalance = Number(labelBalance.textContent.split('€')[0]);
+  const accountBalance = currentAccount.movements.reduce(
+    (acc, mov) => acc + mov,
+    0
+  );
   const newBalance = accountBalance - amount;
-
+  console.log(accountBalance);
   const sentAccount =
     accounts.find(acc => acc.userName === sendTo) || currentAccount;
 
@@ -270,14 +291,16 @@ btnLoan.addEventListener('click', function (event) {
   const condition = currentAccount.movements.some(function (mov) {
     return mov >= loan * 0.1;
   });
-  if (condition) {
-    currentAccount.movements.push(Math.abs(loan));
-    currentAccount.movementsDates.push(new Date().toISOString());
-    updateUI(currentAccount);
-    remove({ input1: inputLoanAmount });
-  } else {
-    console.log("You can' request loan");
-  }
+  setTimeout(() => {
+    if (condition) {
+      currentAccount.movements.push(Math.abs(loan));
+      currentAccount.movementsDates.push(new Date().toISOString());
+      updateUI(currentAccount);
+      remove({ input1: inputLoanAmount });
+    } else {
+      console.log("You can' request loan");
+    }
+  }, 3000);
 });
 
 //TODO implement sorting
