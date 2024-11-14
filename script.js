@@ -19,10 +19,10 @@ const account1 = {
     '2020-05-08T14:11:59.604Z',
     '2020-05-27T17:01:17.194Z',
     '2020-07-11T23:36:17.929Z',
-    '2020-07-12T10:51:36.790Z',
+    '2024-11-12T10:51:36.790Z',
   ],
   currency: 'EUR',
-  locale: 'pt-PT', // de-DE
+  locale: 'ar-EG', // ar-EGP
 };
 
 const account2 = {
@@ -39,7 +39,7 @@ const account2 = {
     '2020-02-05T16:33:06.386Z',
     '2020-04-10T14:43:26.374Z',
     '2020-06-25T18:49:59.371Z',
-    '2020-07-26T12:01:20.894Z',
+    '2024-11-13T12:01:20.894Z',
   ],
   currency: 'USD',
   locale: 'en-US',
@@ -86,13 +86,18 @@ const createUserNames = accs => {
 createUserNames(accounts);
 
 //TODO calc current day
-const calcCurrDay = () => {
+const calcCurrDay = acc => {
   const now = new Date();
-  labelDate.textContent = `${String(now.getDate()).padStart(2, 0)}/${String(
-    now.getMonth() + 1
-  ).padStart(2, 0)}/${String(now.getFullYear()).padStart(2, 0)}, ${String(
-    now.getHours()
-  ).padStart(2, 0)}:${String(now.getMinutes()).padStart(2, 0)}`;
+  // labelDate.textContent = `${String(now.getDate()).padStart(2, 0)}/${String(
+  //   now.getMonth() + 1
+  // ).padStart(2, 0)}/${String(now.getFullYear()).padStart(2, 0)}, ${String(
+  //   now.getHours()
+  // ).padStart(2, 0)}:${String(now.getMinutes()).padStart(2, 0)}`;
+  const options = {
+    dateStyle: 'full',
+    timeStyle: 'long',
+  };
+  labelDate.textContent = Intl.DateTimeFormat(acc.locale, options).format(now);
 };
 
 //TODO display movements on application
@@ -105,17 +110,26 @@ const displayMovements = (acc, sort = false) => {
     movs = acc.movements.slice();
   }
   movs.forEach((mov, idx) => {
+    let txt;
     const index_real_movement = acc.movements.indexOf(mov);
-    const date = new Date(acc.movementsDates[index_real_movement]);
+    const date = Math.round(
+      (new Date() - new Date(acc.movementsDates[index_real_movement])) /
+        (1000 * 60 * 60 * 24)
+    );
+    if (date < 1) {
+      txt = 'Today';
+    } else if (date === 1) {
+      txt = 'yesterday';
+    } else {
+      txt = `${date} days ago`;
+    }
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
         <div class="movements__row">
           <div class="movements__type movements__type--${type}">${
       idx + 1
     } ${type.toUpperCase()}</div>
-          <div class="movements__date">${date.getDate()}/${
-      date.getMonth() + 1
-    }/${date.getFullYear()}</div>
+          <div class="movements__date">${txt}</div>
           <div class="movements__value">${mov.toFixed(2)}€</div>
         </div>`;
     containerMovements.insertAdjacentHTML('beforeend', html);
@@ -162,7 +176,7 @@ const updateUI = currentAccount => {
   calculateAccountStatus(currentAccount);
 
   //display currrent date
-  calcCurrDay();
+  calcCurrDay(currentAccount);
 };
 
 //TODO remove values from inputs
